@@ -7,6 +7,8 @@ export default Ember.ObjectController.extend({
   currentTime: 0,
   progress: 0,
 
+  lastSongUrl: null,
+
   currentUserIsDJ: function() {
     return (this.get('model.user.id') == this.get('controllers.login.authInfo.username'));
   }.property('model.user.id', 'controllers.login.authInfo.username'),
@@ -25,6 +27,8 @@ export default Ember.ObjectController.extend({
     }
 
     $audio.attr('src', this.get('model.song.url'));
+
+    this.notifySong(this.get('model.user'), this.get('model.song'));
 
     // Figure out where to start playing from
     var now = (new Date()).getTime();
@@ -67,6 +71,23 @@ export default Ember.ObjectController.extend({
 
     skip: function() {
       App.get('firebase').child('current_song').child('done').set(true);
+    }
+  },
+
+  notifySong: function(user, song) {
+    if (!("Notification" in window))
+      return;
+
+    if (!song || !song.get('title') || this.lastSongUrl == song.get('url'))
+      return;
+
+    this.lastSongUrl = song.get('url');
+
+    var title = user.get('screenname') + " played " + song.get('title');
+    var body  = song.get('artist')
+
+    if (Notification.permission === "granted") {
+      new Notification(title, { body: body, icon: song.get('imageUrl') });
     }
   }
 });
