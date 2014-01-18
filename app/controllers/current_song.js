@@ -87,7 +87,11 @@ export default Ember.ObjectController.extend({
     var body  = song.get('artist')
 
     if (Notification.permission === "granted") {
-      new Notification(title, { body: body, icon: song.get('imageUrl') });
+      var notification = new Notification(title, { body: body, icon: song.get('imageUrl') });
+
+      setTimeout(function() {
+        notification.cancel();
+      }, 5000);
     }
   }
 });
