@@ -13,6 +13,9 @@ export default Ember.Controller.extend({
 
   actions: {
     login: function() {
+      // we ask for permission here, since Chrome currently requires it to be
+      // requested in response to a user action
+      Notification.requestPermission(function (permission) {});
       ajax('/api/login', {
         type: 'POST',
         data: {
